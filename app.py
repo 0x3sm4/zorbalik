@@ -5,7 +5,12 @@ import os
 import sys
 from datetime import datetime, timedelta
 from collections import Counter
-from openai import OpenAI, AuthenticationError, RateLimitError, APIError
+
+# Gemini API desteği
+try:
+    import google.generativeai as genai
+except ImportError:
+    genai = None  # Paket yüklü değilse aşağıda uyaracağız
 
 # Windows için encoding ayarı
 if sys.platform == "win32":
@@ -36,18 +41,20 @@ with app.app_context():
     db.create_all()
 
 # -------------------- CHATBOT CONFIG --------------------
-# BURAYA KENDİ OPENAI API ANAHTARINIZI EKLEYİN
-OPENAI_API_KEY = ""  # Buraya "sk-proj-..." şeklinde API anahtarınızı girin
+# Gemini yapılandırması
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
+GEMINI_MODEL = "gemini-2.0-flash"
 
-# API anahtarı kontrolü ve uyarı
-if not OPENAI_API_KEY or OPENAI_API_KEY == "":
-    print("[UYARI] OpenAI API anahtari ayarlanmamis!")
-    print("[UYARI] Lutfen app.py dosyasinda OPENAI_API_KEY degiskenini ayarlayin")
-    print("[UYARI] Ornek: OPENAI_API_KEY = 'sk-proj-...'")
-    client = None
+if genai is None:
+    print("[UYARI] Gemini kullanımı icin 'google.generativeai' paketi yuklenmemis.")
+    print("[UYARI] pip install --upgrade google-generativeai")
+    print("[UYARI] veya requirements.txt'e ekleyin.")
+elif not GEMINI_API_KEY:
+    print("[UYARI] Gemini API anahtari ayarlanmamis!")
+    print("[UYARI] Lutfen GEMINI_API_KEY ortam degiskenini ayarlayin")
 else:
-    print("[BASARILI] OpenAI API anahtari bulundu (uzunluk: {} karakter)".format(len(OPENAI_API_KEY)))
-    client = OpenAI(api_key=OPENAI_API_KEY)
+    print("[BASARILI] Gemini API anahtari bulundu (uzunluk: {})".format(len(GEMINI_API_KEY)))
+    genai.configure(api_key=GEMINI_API_KEY)
 
 SYSTEM_PROMPT = """
 🛡️ ZORBALIĞA DESTEK CHATBOTU
@@ -500,7 +507,7 @@ def chatbot_page():
 
 @app.route('/chatbot', methods=['POST'])
 def chatbot():
-    # Chatbot API endpoint
+    """Gemini API için güncellenmiş Chatbot Endpoint'i"""
     try:
         data = request.get_json()
         user_message = data.get('message', '')
@@ -511,82 +518,80 @@ def chatbot():
         
         if not user_message.strip():
             return jsonify({'error': 'Mesaj boş olamaz'}), 400
-        
-        # API key kontrolü
-        if not OPENAI_API_KEY or OPENAI_API_KEY == "":
-            error_msg = 'API anahtari ayarlanmamis. Lutfen app.py dosyasinda OPENAI_API_KEY degiskenini ayarlayin.'
+            
+        if not GEMINI_API_KEY or GEMINI_API_KEY == "":
+            error_msg = 'Gemini API anahtarı ayarlanmamış. Lütfen GEMINI_API_KEY ortam değişkenini ayarlayın.'
             print("[HATA] {}".format(error_msg))
             return jsonify({'error': error_msg}), 500
-        
-        if client is None:
-            error_msg = 'OpenAI client başlatılamadı. API anahtarını kontrol edin.'
-            print("[HATA] {}".format(error_msg))
-            return jsonify({'error': error_msg}), 500
-        
+            
+        if genai is None:
+            return jsonify({'error': 'Google Generative AI kütüphanesi eksik. pip install google-generativeai'}), 500
+
         # Session geçmişini al veya oluştur
         if session_id not in chat_sessions:
-            chat_sessions[session_id] = [
-                {"role": "system", "content": SYSTEM_PROMPT}
-            ]
-            print("[BASARILI] Yeni session olusturuldu")
+            chat_sessions[session_id] = []
+            print("[BASARILI] Yeni session oluşturuldu")
+            
+        history = chat_sessions[session_id]
         
-        # Kullanıcı mesajını ekle
-        chat_sessions[session_id].append({
-            "role": "user",
-            "content": user_message
-        })
+        print("[API] Gemini API'ye istek gönderiliyor...")
         
-        print("[API] OpenAI API'ye istek gonderiliyor...")
+        # Gemini'ye istek gönder ve hem yanıtı hem güncel geçmişi al
+        bot_message, updated_history = call_gemini(history, user_message)
         
-        # YENİ OpenAI API çağrısı (v1.0.0+)
-        response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=chat_sessions[session_id],
-            temperature=0.7,
-            max_tokens=500
-        )
+        print("[BASARILI] Gemini API'den yanıt alındı")
+        print("[BOT] Bot yanıtı: {}...".format(bot_message[:100]))
         
-        print("[BASARILI] OpenAI API'den yanit alindi")
-        
-        bot_message = response.choices[0].message.content
-        print("[BOT] Bot yaniti: {}...".format(bot_message[:100]))
-        
-        # Bot cevabını geçmişe ekle
-        chat_sessions[session_id].append({
-            "role": "assistant",
-            "content": bot_message
-        })
-        
-        # Geçmiş çok uzarsa sınırla (son 20 mesaj)
-        if len(chat_sessions[session_id]) > 21:
-            chat_sessions[session_id] = [chat_sessions[session_id][0]] + chat_sessions[session_id][-20:]
+        # Çok uzayan geçmişi sınırla (Token tasarrufu için son 20 mesajı tutalım)
+        if len(updated_history) > 20:
+            updated_history = updated_history[-20:]
+            
+        # Güncel geçmişi session'a kaydet
+        chat_sessions[session_id] = updated_history
         
         return jsonify({
             'response': bot_message,
             'session_id': session_id
         })
-        
-    except AuthenticationError as e:
-        error_msg = 'OpenAI API anahtari gecersiz. Lutfen API anahtarinizi kontrol edin. Detay: {}'.format(str(e))
-        print("[HATA-AUTH] {}".format(error_msg))
-        return jsonify({'error': error_msg}), 500
-        
-    except RateLimitError as e:
-        error_msg = 'OpenAI API kullanim limitine ulasildi. Lutfen biraz bekleyin. Detay: {}'.format(str(e))
-        print("[HATA-LIMIT] {}".format(error_msg))
-        return jsonify({'error': error_msg}), 429
-        
-    except APIError as e:
-        error_msg = 'OpenAI API hatasi. Detay: {}'.format(str(e))
-        print("[HATA-API] {}".format(error_msg))
-        return jsonify({'error': error_msg}), 500
-        
+
     except Exception as e:
-        error_msg = 'Beklenmeyen bir hata olustu: {}'.format(str(e))
+        error_msg = 'Beklenmeyen bir hata oluştu: {}'.format(str(e))
         print("[HATA-GENEL] {}".format(error_msg))
         import traceback
         traceback.print_exc()
         return jsonify({'error': error_msg}), 500
+
+
+def call_gemini(history, new_message):
+    """
+    Mesaj geçmişini ve yeni mesajı Gemini API'sine gönderir, 
+    botun yanıtını ve güncellenmiş mesaj geçmişini döndürür.
+    """
+    if genai is None:
+        raise RuntimeError("Gemini kütüphanesi başlatılamadı.")
+        
+    model = genai.GenerativeModel(
+        model_name=GEMINI_MODEL,
+        system_instruction=SYSTEM_PROMPT
+    )
+    
+    # Sohbet oturumunu mevcut geçmişle başlat
+    chat = model.start_chat(history=history)
+    
+    # Yeni mesajı gönder
+    response = chat.send_message(new_message)
+    
+    # Güncellenmiş geçmişi dictionary formatında kaydetmek için hazırla
+    updated_history = []
+    for msg in chat.history:
+        # msg.parts bir liste olduğu için ilk elemanın metnini alıyoruz
+        text_content = msg.parts[0].text if msg.parts else ""
+        updated_history.append({
+            "role": msg.role,
+            "parts": [text_content]
+        })
+        
+    return response.text, updated_history
 
 @app.route('/chatbot/reset', methods=['POST'])
 def reset_chat():
@@ -742,12 +747,15 @@ if __name__ == '__main__':
     print("ZORBALIK BILDIRIM SISTEMI BASLATILIYOR")
     print("="*60)
     
-    if not OPENAI_API_KEY or OPENAI_API_KEY == "":
-        print("\n[UYARI] OpenAI API anahtari ayarlanmamis!")
+    if genai is None:
+        print("\n[UYARI] google-generativeai paketi yuklenmemis!")
+        print("[UYARI] pip install --upgrade google-generativeai\n")
+    elif not GEMINI_API_KEY or GEMINI_API_KEY == "":
+        print("\n[UYARI] Gemini API anahtari ayarlanmamis!")
         print("[UYARI] Chatbot calismayacak!")
-        print("[UYARI] Lutfen app.py dosyasinin 48. satirinda API anahtarinizi ayarlayin\n")
+        print("[UYARI] Lutfen GEMINI_API_KEY ortam degiskenini ayarlayin\n")
     else:
-        print("\n[BASARILI] OpenAI API anahtari basariyla yuklendi")
+        print("\n[BASARILI] Gemini API anahtari basariyla yuklendi")
         print("[BASARILI] Chatbot hazir!\n")
     
     print("="*60 + "\n")

@@ -333,7 +333,7 @@ async function sendMessage() {
         errorMsgDiv.className = 'message bot';
         errorMsgDiv.innerHTML = '<div class="message-bubble" style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white;">' +
             '<i class="fas fa-exclamation-triangle"></i> ' + escapeHtml(error.message) + 
-            '<br><br><small>📌 Gemini API anahtarı ayarlanmamış olabilir. Lütfen GEMINI_API_KEY ortam değişkenini ayarlayın.</small>' +
+            '<br><br><small>📌 Gemini API anahtarı ayarlanmamış olabilir. Lütfen app.py dosyasında GEMINI_API_KEY değişkenini kontrol edin.</small>' +
             '<br><small>🔗 API anahtarı almak için: <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: white; text-decoration: underline;">aistudio.google.com</a></small>' +
             '</div>';
         messagesDiv.appendChild(errorMsgDiv);

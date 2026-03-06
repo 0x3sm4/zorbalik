@@ -6,6 +6,13 @@ import sys
 from datetime import datetime, timedelta
 from collections import Counter
 
+# .env dosyasından ortam değişkenlerini yükle
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    print("[UYARI] python-dotenv paketi yuklenmemis. pip install python-dotenv")
+
 # Gemini API desteği
 try:
     import google.generativeai as genai
@@ -43,7 +50,7 @@ with app.app_context():
 # -------------------- CHATBOT CONFIG --------------------
 # Gemini yapılandırması
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
-GEMINI_MODEL = "gemini-2.0-flash"
+GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-3-flash-preview")
 
 if genai is None:
     print("[UYARI] Gemini kullanımı icin 'google.generativeai' paketi yuklenmemis.")
@@ -51,9 +58,8 @@ if genai is None:
     print("[UYARI] veya requirements.txt'e ekleyin.")
 elif not GEMINI_API_KEY:
     print("[UYARI] Gemini API anahtari ayarlanmamis!")
-    print("[UYARI] Lutfen GEMINI_API_KEY ortam degiskenini ayarlayin")
 else:
-    print("[BASARILI] Gemini API anahtari bulundu (uzunluk: {})".format(len(GEMINI_API_KEY)))
+    print(f"[BASARILI] Gemini API anahtari bulundu (uzunluk: {len(GEMINI_API_KEY)})")
     genai.configure(api_key=GEMINI_API_KEY)
 
 SYSTEM_PROMPT = """
@@ -520,8 +526,8 @@ def chatbot():
             return jsonify({'error': 'Mesaj boş olamaz'}), 400
             
         if not GEMINI_API_KEY or GEMINI_API_KEY == "":
-            error_msg = 'Gemini API anahtarı ayarlanmamış. Lütfen GEMINI_API_KEY ortam değişkenini ayarlayın.'
-            print("[HATA] {}".format(error_msg))
+            error_msg = 'Gemini API anahtarı ayarlanmamış. Lütfen app.py dosyasında GEMINI_API_KEY değişkenini ayarlayın.'
+            print(f"[HATA] {error_msg}")
             return jsonify({'error': error_msg}), 500
             
         if genai is None:
@@ -747,15 +753,12 @@ if __name__ == '__main__':
     print("ZORBALIK BILDIRIM SISTEMI BASLATILIYOR")
     print("="*60)
     
-    if genai is None:
-        print("\n[UYARI] google-generativeai paketi yuklenmemis!")
-        print("[UYARI] pip install --upgrade google-generativeai\n")
-    elif not GEMINI_API_KEY or GEMINI_API_KEY == "":
+    if not GEMINI_API_KEY or GEMINI_API_KEY == "":
         print("\n[UYARI] Gemini API anahtari ayarlanmamis!")
         print("[UYARI] Chatbot calismayacak!")
-        print("[UYARI] Lutfen GEMINI_API_KEY ortam degiskenini ayarlayin\n")
+        print("[UYARI] Lutfen app.py dosyasinin en ustundeki GEMINI_API_KEY degiskenini ayarlayin\n")
     else:
-        print("\n[BASARILI] Gemini API anahtari basariyla yuklendi")
+        print("\n[BASARILI] Gemini API anahtari kontrol edildi.")
         print("[BASARILI] Chatbot hazir!\n")
     
     print("="*60 + "\n")

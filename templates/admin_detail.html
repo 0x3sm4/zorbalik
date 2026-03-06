@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bildirim Detay - Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: linear-gradient(135deg, #E8ECEF 0%, #C4D8E5 40%, #A7C7E7 100%);
+            min-height: 100vh;
+            padding: 24px;
+        }
+
+        .container-fluid {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            background: rgba(232, 236, 239, 0.85);
+            backdrop-filter: blur(10px);
+            border-radius: 14px;
+            color: #333333;text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 24px;
+            transition: all 0.3s;
+        }
+
+        .detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .detail-title {
+            font-size: 32px;
+            font-weight: 800;
+            color: #333333;}
+
+        .badge {
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .badge-high {
+            background: linear-gradient(135deg, #8EB1D1, #A7C7E7);
+            color: white;
+        }
+
+        .badge-medium {
+            background: linear-gradient(135deg, #8EB1D1, #A7C7E7);
+            color: white;
+        }
+
+        .badge-low {
+            background: linear-gradient(135deg, #8EB1D1, #A7C7E7);
+            color: white;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+        }
+
+        .card {
+            background: rgba(232, 236, 239, 0.85);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 28px 32px;
+            margin-bottom: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 4px 16px rgba(28, 43, 72, 0.08);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333333;margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-title i {
+            color: #333333;}
+
+        .content-box {
+            background: rgba(232, 236, 239, 0.85);
+            border-radius: 14px;
+            padding: 20px;
+            line-height: 1.7;
+            color: #333333;font-size: 15px;
+        }
+
+        /* Resim önizleme stilleri */
+        .image-preview {
+            max-width: 200px;
+            max-height: 200px;
+            width: auto;
+            height: auto;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s;
+            object-fit: cover;
+        }
+
+        .image-preview:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+        }
+
+        /* Modal stilleri */
+        .image-modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content-img {
+            position: relative;
+            margin: auto;
+            display: block;
+            max-width: 90%;
+            max-height: 90%;
+            animation: zoomIn 0.3s;
+            margin-top: 50px;
+        }
+
+        @keyframes zoomIn {
+            from { transform: scale(0.8); }
+            to { transform: scale(1); }
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 40px;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 10000;
+            transition: all 0.3s;
+        }
+
+        .close-modal:hover {
+            color: #f1f1f1;
+            transform: scale(1.2);
+        }
+
+        .modal-caption {
+            text-align: center;
+            color: #ccc;
+            padding: 20px;
+            font-size: 16px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 16px 0;
+            border-bottom: 1px solid rgba(142, 177, 209, 0.1);
+        }
+
+        .info-label {
+            font-size: 13px;
+            color: #333333;font-weight: 600;
+        }
+
+        .info-value {
+            font-size: 14px;
+            color: #333333;font-weight: 700;
+        }
+
+        .form-control, select, textarea {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 12px;
+            border: 2px solid rgba(142, 177, 209, 0.15);
+            background: rgba(232, 236, 239, 0.85);
+            margin-bottom: 16px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #8EB1D1, #A7C7E7);
+            border: none;
+            border-radius: 14px;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(142, 177, 209, 0.3);
+        }
+
+        @media (max-width: 968px) {
+            .two-column { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container-fluid">
+    <a href="/admin" class="back-btn">
+        <i class="fas fa-arrow-left"></i> Tüm Bildirimlere Dön
+    </a>
+
+    <div class="detail-header">
+        <h1 class="detail-title">Bildirim #{{ notification.id }}</h1>
+        <span class="badge badge-{{ notification.risk_level }}">
+            {% if notification.risk_level == 'high' %}Yüksek Risk
+            {% elif notification.risk_level == 'medium' %}Orta Risk
+            {% else %}Düşük Risk{% endif %}
+        </span>
+    </div>
+
+    <div class="two-column">
+        <div>
+            <div class="card">
+                <h3 class="card-title">
+                    <i class="fas fa-file-alt"></i> Bildirim İçeriği
+                </h3>
+                <div class="content-box">{{ notification.text or 'Metin bilgisi yok' }}</div>
+            </div>
+
+            {% if notification.audio_path %}
+            <div class="card">
+                <h3 class="card-title">
+                    <i class="fas fa-paperclip"></i> Yüklenen Dosya
+                </h3>
+                <div class="content-box">
+                    {% set file_ext = notification.audio_path.split('.')[-1].lower() %}
+                    
+                    {# Resim dosyaları - Önizleme + Modal #}
+                    {% if file_ext in ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'] %}
+                        <div style="margin-bottom: 16px;">
+                            <p style="color: #666; font-size: 13px; margin-bottom: 12px;">
+                                <i class="fas fa-info-circle"></i> Resmi büyütmek için tıklayın
+                            </p>
+                            <img src="{{ url_for('uploaded_file', filename=notification.audio_path) }}" 
+                                 alt="Yüklenen Görsel" 
+                                 class="image-preview"
+                                 onclick="openImageModal('{{ url_for('uploaded_file', filename=notification.audio_path) }}', '{{ notification.audio_path }}')">
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; color: #666; font-size: 13px; margin-bottom: 12px;">
+                            <i class="fas fa-image"></i>
+                            <span>{{ notification.audio_path }}</span>
+                        </div>
+                    
+                    {# Ses dosyaları #}
+                    {% elif file_ext in ['mp3', 'wav', 'webm', 'ogg', 'm4a', 'aac'] %}
+                        <audio controls style="width: 100%; margin-bottom: 12px;">
+                            <source src="{{ url_for('uploaded_file', filename=notification.audio_path) }}" type="audio/{{ file_ext }}">
+                            <source src="{{ url_for('uploaded_file', filename=notification.audio_path) }}" type="audio/webm">
+                            <source src="{{ url_for('uploaded_file', filename=notification.audio_path) }}" type="audio/mpeg">
+                            Tarayıcınız ses oynatmayı desteklemiyor.
+                        </audio>
+                        <div style="display: flex; align-items: center; gap: 8px; color: #666; font-size: 13px; margin-bottom: 12px;">
+                            <i class="fas fa-file-audio"></i>
+                            <span>{{ notification.audio_path }}</span>
+                        </div>
+                    
+                    {# Video dosyaları #}
+                    {% elif file_ext in ['mp4', 'webm', 'mov', 'avi', 'mkv'] %}
+                        <video controls style="max-width: 100%; height: auto; border-radius: 12px; margin-bottom: 12px;">
+                            <source src="{{ url_for('uploaded_file', filename=notification.audio_path) }}" type="video/{{ file_ext }}">
+                            Tarayıcınız video oynatmayı desteklemiyor.
+                        </video>
+                        <div style="display: flex; align-items: center; gap: 8px; color: #666; font-size: 13px; margin-bottom: 12px;">
+                            <i class="fas fa-file-video"></i>
+                            <span>{{ notification.audio_path }}</span>
+                        </div>
+                    
+                    {# PDF dosyaları #}
+                    {% elif file_ext == 'pdf' %}
+                        <div style="background: rgba(239, 68, 68, 0.1); padding: 16px; border-radius: 12px; margin-bottom: 12px; text-align: center;">
+                            <i class="fas fa-file-pdf" style="font-size: 48px; color: #DC2626; margin-bottom: 12px;"></i>
+                            <div style="display: flex; align-items: center; justify-content: center; gap: 8px; color: #666; font-size: 13px; margin-bottom: 12px;">
+                                <i class="fas fa-file-pdf"></i>
+                                <span>{{ notification.audio_path }}</span>
+                            </div>
+                            <a href="{{ url_for('uploaded_file', filename=notification.audio_path) }}" target="_blank"
+                               style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background: #DC2626; color: white; text-decoration: none; border-radius: 8px; font-size: 13px; font-weight: 600;">
+                                <i class="fas fa-external-link-alt"></i> PDF'i Aç
+                            </a>
+                        </div>
+                    
+                    {# Word belgeleri #}
+                    {% elif file_ext in ['doc', 'docx'] %}
+                        <div style="background: rgba(37, 99, 235, 0.1); padding: 16px; border-radius: 12px; margin-bottom: 12px; text-align: center;">
+                            <i class="fas fa-file-word" style="font-size: 48px; color: #2563EB; margin-bottom: 12px;"></i>
+                            <div style="display: flex; align-items: center; justify-content: center; gap: 8px; color: #666; font-size: 13px; margin-bottom: 12px;">
+                                <i class="fas fa-file-word"></i>
+                                <span>{{ notification.audio_path }}</span>
+                            </div>
+                        </div>
+                    
+                    {# Diğer dosya türleri #}
+                    {% else %}
+                        <div style="background: rgba(107, 114, 128, 0.1); padding: 16px; border-radius: 12px; margin-bottom: 12px; text-align: center;">
+                            <i class="fas fa-file" style="font-size: 48px; color: #6B7280; margin-bottom: 12px;"></i>
+                            <div style="display: flex; align-items: center; justify-content: center; gap: 8px; color: #666; font-size: 13px; margin-bottom: 12px;">
+                                <i class="fas fa-file"></i>
+                                <span>{{ notification.audio_path }}</span>
+                            </div>
+                        </div>
+                    {% endif %}
+                    
+                    {# İndirme butonu - tüm dosya türleri için #}
+                    <a href="{{ url_for('uploaded_file', filename=notification.audio_path) }}" download 
+                       style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; background: linear-gradient(135deg, #8EB1D1, #A7C7E7); color: white; text-decoration: none; border-radius: 10px; font-size: 14px; font-weight: 600;">
+                        <i class="fas fa-download"></i> Dosyayı İndir
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if notification.contact_name %}
+            <div class="card">
+                <h3 class="card-title">
+                    <i class="fas fa-user"></i> İletişim Bilgileri
+                </h3>
+                <div class="info-row">
+                    <span class="info-label">Ad Soyad</span>
+                    <span class="info-value">{{ notification.contact_name }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">E-posta</span>
+                    <span class="info-value">{{ notification.contact_email }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Telefon</span>
+                    <span class="info-value">{{ notification.contact_phone }}</span>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div>
+            <div class="card">
+                <h3 class="card-title">
+                    <i class="fas fa-info-circle"></i> Bildirim Bilgileri
+                </h3>
+                <div class="info-row">
+                    <span class="info-label">Oluşturma Tarihi</span>
+                    <span class="info-value">{{ notification.created_at.strftime('%d.%m.%Y %H:%M') }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Takip Kodu</span>
+                    <span class="info-value">{{ notification.tracking_token }}</span>
+                </div>
+                {% if notification.city %}
+                <div class="info-row">
+                    <span class="info-label">Konum</span>
+                    <span class="info-value">
+                        <i class="fas fa-map-marker-alt" style="color: #8EB1D1;"></i>
+                        {{ notification.city }}{% if notification.district %}, {{ notification.district }}{% endif %}
+                    </span>
+                </div>
+                {% endif %}
+                <div class="info-row">
+                    <span class="info-label">Gizlilik Seviyesi</span>
+                    <span class="info-value">
+                        {% if notification.anonymity_level == 'full_anonymous' %}
+                            <i class="fas fa-user-secret"></i> Tam Anonim
+                        {% else %}
+                            <i class="fas fa-user"></i> Açık Kimlik
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title">
+                    <i class="fas fa-tasks"></i> Durum Yönetimi
+                </h3>
+                <form method="post" action="/admin/{{ notification.id }}/update">
+                    <label style="font-size: 13px; color: #333333;font-weight: 600;">Durum</label>
+                    <select name="status" class="form-control">
+                        <option value="İnceleniyor" {% if notification.status == 'İnceleniyor' %}selected{% endif %}>İnceleniyor</option>
+                        <option value="Devam Ediyor" {% if notification.status == 'Devam Ediyor' %}selected{% endif %}>Devam Ediyor</option>
+                        <option value="Çözüldü" {% if notification.status == 'Çözüldü' %}selected{% endif %}>Çözüldü</option>
+                        <option value="Kapandı" {% if notification.status == 'Kapandı' %}selected{% endif %}>Kapandı</option>
+                    </select>
+
+                    <label style="font-size: 13px; color: #333333;font-weight: 600;">Atanan Yetkili</label>
+                    <input type="text" name="assigned_to" class="form-control" value="{{ notification.assigned_to or '' }}">
+
+                    <label style="font-size: 13px; color: #333333;font-weight: 600;">Admin Notları</label>
+                    <textarea name="admin_notes" class="form-control" rows="4">{{ notification.admin_notes or '' }}</textarea>
+
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-save"></i> Değişiklikleri Kaydet
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Resim Modal -->
+<div id="imageModal" class="image-modal" onclick="closeImageModal()">
+    <span class="close-modal" onclick="closeImageModal()">&times;</span>
+    <img class="modal-content-img" id="modalImage">
+    <div class="modal-caption" id="modalCaption"></div>
+</div>
+
+<script>
+function openImageModal(imageSrc, caption) {
+    var modal = document.getElementById("imageModal");
+    var modalImg = document.getElementById("modalImage");
+    var captionText = document.getElementById("modalCaption");
+    
+    modal.style.display = "block";
+    modalImg.src = imageSrc;
+    captionText.innerHTML = caption;
+    
+    // ESC tuşu ile kapatma
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closeImageModal();
+        }
+    });
+}
+
+function closeImageModal() {
+    var modal = document.getElementById("imageModal");
+    modal.style.display = "none";
+}
+</script>
+
+</body>
+</html>

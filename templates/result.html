@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bildirim Başarılı - Güvenli Okul</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: linear-gradient(135deg, #E8ECEF 0%, #C4D8E5 40%, #A7C7E7 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .success-container {
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .success-card {
+            background: rgba(232, 236, 239, 0.85);
+            backdrop-filter: blur(20px);
+            border-radius: 32px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 8px 32px rgba(28, 43, 72, 0.08);
+        }
+
+        .success-header {
+            background: linear-gradient(135deg, #8EB1D1, #A7C7E7);
+            padding: 48px 32px;
+            text-align: center;
+            color: white;
+        }
+
+        .success-icon {
+            width: 100px;
+            height: 100px;
+            background: rgba(232, 236, 239, 0.85);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            animation: scaleIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .success-icon i {
+            font-size: 52px;
+        }
+
+        .success-header h2 {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .success-header p {
+            font-size: 15px;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+
+        .success-body {
+            padding: 44px 40px;
+            text-align: center;
+        }
+
+        .success-body p {
+            color: #333333;font-size: 15px;
+            line-height: 1.7;
+            margin-bottom: 32px;
+        }
+
+        .token-box {
+            background: rgba(142, 177, 209, 0.08);
+            border: 2px dashed rgba(142, 177, 209, 0.3);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 12px;
+            position: relative;
+        }
+
+        .token-text {
+            font-family: 'Courier New', monospace;
+            font-size: 28px;
+            font-weight: 800;
+            color: #333333;letter-spacing: 3px;
+            margin-bottom: 12px;
+        }
+
+        .btn-copy {
+            background: linear-gradient(135deg, #8EB1D1, #A7C7E7);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-copy:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(142, 177, 209, 0.3);
+        }
+
+        .copy-alert {
+            color: #333333;font-weight: 700;
+            font-size: 13px;
+            margin-top: 12px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .copy-alert.show {
+            opacity: 1;
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 32px;
+        }
+
+        .btn-primary {
+            padding: 16px;
+            background: linear-gradient(135deg, #8EB1D1, #A7C7E7);
+            border: none;
+            border-radius: 14px;
+            color: white;
+            font-weight: 700;
+            font-size: 15px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(142, 177, 209, 0.4);
+        }
+
+        .btn-secondary {
+            padding: 16px;
+            background: rgba(232, 236, 239, 0.85);
+            border: 2px solid rgba(142, 177, 209, 0.2);
+            border-radius: 14px;
+            color: #333333;font-weight: 700;
+            font-size: 15px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(142, 177, 209, 0.1);
+            color: #333333;
+        }
+
+        .back-btn-fixed {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: rgba(142, 177, 209, 0.1);
+            border-radius: 12px;
+            color: #333333;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s;
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 100;
+        }
+
+        .back-btn-fixed:hover {
+            background: rgba(142, 177, 209, 0.2);
+            color: #333333;
+            transform: translateX(-4px);
+        }
+    </style>
+</head>
+<body>
+
+<a href="javascript:history.back()" class="back-btn-fixed">
+    <i class="fas fa-arrow-left"></i> Geri
+</a>
+
+<div class="success-container">
+    <div class="success-card">
+        <div class="success-header">
+            <div class="success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h2>Bildiriminiz Alındı!</h2>
+            <p>Cesaretiniz için teşekkür ederiz</p>
+        </div>
+
+        <div class="success-body">
+            <p>
+                Durumu takip edebilmeniz veya yetkililerle anonim olarak haberleşebilmeniz için 
+                size özel bir takip kodu oluşturduk.<br>
+                <strong style="color: #333333;">Lütfen bu kodu kaybetmeyin.</strong>
+            </p>
+
+            <div class="token-box">
+                <div class="token-text" id="tokenText">{{ tracking_token }}</div>
+                <button class="btn-copy" onclick="kopyala()">
+                    <i class="fas fa-copy"></i> Kodu Kopyala
+                </button>
+                <div id="copyAlert" class="copy-alert">
+                    <i class="fas fa-check-circle"></i> Kod kopyalandı!
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <a href="/track" class="btn-primary">
+                    <i class="fas fa-search"></i> Durumu Şimdi Sorgula
+                </a>
+                <a href="/" class="btn-secondary">
+                    <i class="fas fa-home"></i> Ana Sayfaya Dön
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function kopyala() {
+        var copyText = document.getElementById("tokenText");
+        var textToCopy = copyText.innerText || copyText.textContent;
+        
+        navigator.clipboard.writeText(textToCopy).then(function() {
+            var alertBox = document.getElementById("copyAlert");
+            alertBox.classList.add('show');
+            
+            setTimeout(function(){ 
+                alertBox.classList.remove('show');
+            }, 2000);
+        }, function(err) {
+            console.error('Kopyalama hatası: ', err);
+        });
+    }
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

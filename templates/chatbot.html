@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Destek Chatbot - Güvenli Okul</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: linear-gradient(135deg, #E8ECEF 0%, #C4D8E5 40%, #A7C7E7 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .chat-container {
+            max-width: 800px;
+            width: 100%;
+            height: 700px;
+            background: rgba(232, 236, 239, 0.85);
+            backdrop-filter: blur(20px);
+            border-radius: 32px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 8px 32px rgba(28, 43, 72, 0.08);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #8EB1D1, #A7C7E7);
+            padding: 24px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .chat-avatar {
+            width: 54px;
+            height: 54px;
+            background: rgba(232, 236, 239, 0.85);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+        }
+
+        .chat-info h2 {
+            font-size: 20px;
+            font-weight: 800;
+            margin: 0;
+        }
+
+        .chat-info p {
+            font-size: 13px;
+            opacity: 0.9;
+            margin: 0;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+        }
+
+        .message {
+            margin-bottom: 16px;
+            display: flex;
+            gap: 12px;
+        }
+
+        .message.bot {
+            justify-content: flex-start;
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message-bubble {
+            max-width: 70%;
+            padding: 14px 18px;
+            border-radius: 16px;
+            font-size: 14px;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+
+        .bot .message-bubble {
+            background: rgba(232, 236, 239, 0.85);
+            color: #333333;
+        }
+
+        .user .message-bubble {
+            background: linear-gradient(135deg, #8EB1D1, #A7C7E7);
+            color: white;
+        }
+
+        .chat-input {
+            padding: 20px 24px;
+            background: rgba(232, 236, 239, 0.85);
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+            display: flex;
+            gap: 12px;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 14px 18px;
+            border-radius: 14px;
+            border: 2px solid rgba(142, 177, 209, 0.2);
+            background: rgba(232, 236, 239, 0.85);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 14px;
+        }
+
+        .chat-input input:focus {
+            outline: none;
+            border-color: #8EB1D1;
+        }
+
+        .chat-input button {
+            padding: 14px 24px;
+            background: linear-gradient(135deg, #8EB1D1, #A7C7E7);
+            border: none;
+            border-radius: 14px;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .chat-input button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(142, 177, 209, 0.3);
+        }
+
+        .chat-input button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-back {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            padding: 12px 20px;
+            background: rgba(232, 236, 239, 0.85);
+            border-radius: 12px;
+            color: #333333;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .btn-back:hover {
+            background: rgba(142, 177, 209, 0.2);
+            color: #333333;
+        }
+
+        /* Yazıyor animasyonu */
+        .typing-indicator .message-bubble i {
+            animation: typing 1.4s infinite;
+            opacity: 0.4;
+            font-size: 8px;
+            margin: 0 2px;
+        }
+
+        .typing-indicator .message-bubble i:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-indicator .message-bubble i:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% {
+                opacity: 0.4;
+            }
+            30% {
+                opacity: 1;
+            }
+        }
+
+        /* Scroll bar styling */
+        .chat-messages::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: rgba(142, 177, 209, 0.1);
+            border-radius: 4px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: rgba(142, 177, 209, 0.3);
+            border-radius: 4px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb:hover {
+            background: rgba(142, 177, 209, 0.5);
+        }
+    </style>
+</head>
+<body>
+
+<a href="/" class="btn-back">
+    <i class="fas fa-arrow-left"></i> Geri
+</a>
+
+<div class="chat-container">
+    <div class="chat-header">
+        <div class="chat-avatar">
+            <i class="fas fa-robot"></i>
+        </div>
+        <div class="chat-info">
+            <h2>Destek Asistanı</h2>
+            <p>Size nasıl yardımcı olabilirim?</p>
+        </div>
+    </div>
+
+    <div class="chat-messages" id="chatMessages">
+        <div class="message bot">
+            <div class="message-bubble">
+                Merhaba! Ben Güvenli Okul destek asistanıyım. Sizlere zorbalık, şiddet veya güvenlik konularında yardımcı olmak için buradayım. Ne konuda destek istiyorsunuz?
+            </div>
+        </div>
+    </div>
+
+    <div class="chat-input">
+        <input type="text" id="userInput" placeholder="Mesajınızı yazın..." autocomplete="off">
+        <button onclick="sendMessage()" id="sendBtn">
+            <i class="fas fa-paper-plane"></i> Gönder
+        </button>
+    </div>
+</div>
+
+<script>
+// Session ID oluştur
+const sessionId = 'session_' + Math.random().toString(36).substr(2, 9);
+
+// Yükleniyor animasyonu
+function showTypingIndicator() {
+    const messagesDiv = document.getElementById('chatMessages');
+    const typingDiv = document.createElement('div');
+    typingDiv.className = 'message bot typing-indicator';
+    typingDiv.id = 'typing-indicator';
+    typingDiv.innerHTML = '<div class="message-bubble"><i class="fas fa-circle"></i> <i class="fas fa-circle"></i> <i class="fas fa-circle"></i></div>';
+    messagesDiv.appendChild(typingDiv);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
+function hideTypingIndicator() {
+    const indicator = document.getElementById('typing-indicator');
+    if (indicator) {
+        indicator.remove();
+    }
+}
+
+async function sendMessage() {
+    const input = document.getElementById('userInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const message = input.value.trim();
+    
+    if (!message) return;
+
+    const messagesDiv = document.getElementById('chatMessages');
+    
+    // Butonu devre dışı bırak
+    sendBtn.disabled = true;
+    
+    // Kullanıcı mesajını ekle
+    const userMsgDiv = document.createElement('div');
+    userMsgDiv.className = 'message user';
+    userMsgDiv.innerHTML = '<div class="message-bubble">' + escapeHtml(message) + '</div>';
+    messagesDiv.appendChild(userMsgDiv);
+    
+    input.value = '';
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    
+    // Yükleniyor göster
+    showTypingIndicator();
+    
+    try {
+        // Backend'e istek gönder
+        const response = await fetch('/chatbot', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                message: message,
+                session_id: sessionId
+            })
+        });
+        
+        hideTypingIndicator();
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Bir hata oluştu');
+        }
+        
+        const data = await response.json();
+        
+        // Bot yanıtını ekle
+        const botMsgDiv = document.createElement('div');
+        botMsgDiv.className = 'message bot';
+        botMsgDiv.innerHTML = '<div class="message-bubble">' + escapeHtml(data.response) + '</div>';
+        messagesDiv.appendChild(botMsgDiv);
+        
+    } catch (error) {
+        hideTypingIndicator();
+        
+        console.error('Chatbot hatası:', error);
+        
+        // Hata mesajı göster
+        const errorMsgDiv = document.createElement('div');
+        errorMsgDiv.className = 'message bot';
+        errorMsgDiv.innerHTML = '<div class="message-bubble" style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white;">' +
+            '<i class="fas fa-exclamation-triangle"></i> ' + escapeHtml(error.message) + 
+            '<br><br><small>📌 OpenAI API anahtarı ayarlanmamış olabilir. Lütfen app.py dosyasında OPENAI_API_KEY değişkenini ayarlayın.</small>' +
+            '<br><small>🔗 API anahtarı almak için: <a href="https://platform.openai.com/api-keys" target="_blank" style="color: white; text-decoration: underline;">platform.openai.com</a></small>' +
+            '</div>';
+        messagesDiv.appendChild(errorMsgDiv);
+    } finally {
+        // Butonu tekrar aktif et
+        sendBtn.disabled = false;
+        input.focus();
+    }
+    
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
+// HTML karakterlerini escape et (XSS koruması)
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML.replace(/\n/g, '<br>');
+}
+
+// Enter tuşu ile mesaj gönder
+document.addEventListener('DOMContentLoaded', function() {
+    const input = document.getElementById('userInput');
+    input.addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            sendMessage();
+        }
+    });
+    
+    // Input'a otomatik focus
+    input.focus();
+});
+</script>
+
+</body>
+</html>

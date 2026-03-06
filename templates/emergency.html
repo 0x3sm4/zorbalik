@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACİL DURUM REHBERİ - GüvenliOkul</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body { background: linear-gradient(135deg, #E74C3C 0%, #C0392B 100%); font-family: 'Plus Jakarta Sans', sans-serif; min-height: 100vh; padding: 24px;
+        }
+
+        .emergency-container { 
+            max-width: 900px; 
+            margin: 0 auto; 
+            padding: 20px;
+        }
+
+        .back-btn {
+            background: rgba(255,255,255,0.25);
+            backdrop-filter: blur(10px);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 12px 24px;
+            border-radius: 50px;
+            margin-bottom: 24px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,0.35);
+            color: white;
+            transform: translateX(-5px);
+        }
+
+                                .emergency-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 40px;
+            text-align: center; /* center text */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+
+        .emergency-icon {
+            font-size: 90px;
+            color: #E74C3C;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .emergency-header h1 {
+            font-size: 32px;
+            font-weight: 800;
+            color: #000000;
+            margin-bottom: 10px;
+            letter-spacing: -0.5px;
+        }
+
+        .emergency-header p {
+            color: #6B7C8E;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .guide-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+
+        .guide-card h3 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #000000;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .guide-card h3 i {
+            color: #E74C3C;
+            font-size: 24px;
+        }
+
+        .step-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .step-item {
+            display: flex;
+            gap: 16px;
+            padding: 14px 20px;
+            margin-bottom: 8px;
+            background: rgba(91, 155, 213, 0.05);
+            border-radius: 14px;
+            border-left: 4px solid #E74C3C;
+            transition: all 0.3s;
+        }
+
+        .step-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            background: rgba(91, 155, 213, 0.08);
+        }
+
+        .step-number {
+            background: linear-gradient(135deg, #E74C3C, #C0392B);
+            color: white;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 18px;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+        }
+
+        .step-content h4 {
+            font-size: 17px;
+            font-weight: 700;
+            color: #000000;
+            margin-bottom: 8px;
+        }
+
+        .step-content p {
+            color: #333333;
+            margin: 0;
+            line-height: 1.4;
+            font-size: 14px;
+        }
+
+        .warning-box {
+            background: #FFF3E0;
+            border-left: 4px solid #F39C12;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin: 12px 0;
+        }
+
+        .warning-box h4 {
+            color: #E67E22;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 16px;
+        }
+
+        .warning-box p {
+            color: #333333;
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        .danger-box {
+            background: #FFEBEE;
+            border-left: 4px solid #E74C3C;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin: 12px 0;
+        }
+
+        .danger-box h4 {
+            color: #C0392B;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 16px;
+        }
+
+        .danger-box p {
+            color: #333333;
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        .success-box {
+            background: #E8F5E9;
+            border-left: 4px solid #2ECC71;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin: 12px 0;
+        
+
+        .success-box h4 {
+            color: #27AE60;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 16px;
+        }
+
+        .success-box p {
+            color: #333333;
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .contact-card {
+            background: linear-gradient(135deg, #5B9BD5, #8B7EC8);
+            color: white;
+            padding: 28px;
+            border-radius: 16px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+            box-shadow: 0 4px 16px rgba(91, 155, 213, 0.3);
+        }
+
+        .contact-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(91, 155, 213, 0.4);
+            color: white;
+        }
+
+        .contact-card i {
+            font-size: 36px;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .contact-card h4 {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .contact-card p {
+            font-size: 13px;
+            opacity: 0.9;
+            margin: 0;
+            font-weight: 500;
+        }
+
+        .emergency-btn {
+            background: linear-gradient(135deg, #E74C3C, #C0392B);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            margin-top: 20px;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+        }
+
+        .emergency-btn:hover {
+            background: linear-gradient(135deg, #C0392B, #A93226);
+            color: white;
+            transform: scale(1.02);
+            box-shadow: 0 8px 28px rgba(231, 76, 60, 0.5);
+        }
+
+        .tip-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(91, 155, 213, 0.1);
+            color: #5B9BD5;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-top: 12px;
+            border: 1px solid rgba(91, 155, 213, 0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="emergency-container">
+        
+        <a href="/" class="back-btn">
+            <i class="fas fa-arrow-left"></i>
+            Ana Sayfaya Dön
+        </a>
+
+        <!-- BAŞLIK -->
+        <div class="emergency-header">
+            <div class="emergency-icon">
+                <i class="fas fa-shield-heart"></i>
+            </div>
+            <h1>ACİL DURUM REHBERİ</h1>
+            <p>Zorbalığa uğradığında yapman gerekenler</p>
+        </div>
+
+        <!-- HEMEN ŞİMDİ TEHLİKEDEYSEN -->
+        <div class="guide-card">
+            <div class="danger-box">
+                <h4>
+                    <i class="fas fa-exclamation-triangle"></i>
+                    HEMEN ŞİMDİ TEHLİKEDEYSEN
+                </h4>
+                <p>
+                    Eğer fiziksel şiddet görüyorsan, tehdit ediliyorsan veya kendini güvende hissetmiyorsan, 
+                    <strong>hemen yetişkin bir yardım çağır!</strong> Öğretmenini, okul idaresini veya güvenlik görevlisini bul.
+                </p>
+            </div>
+        </div>
+
+        <!-- İLK YAPMAN GEREKENLER -->
+        <div class="guide-card">
+            <h3>
+                <i class="fas fa-list-check"></i>
+                İlk Yapman Gerekenler
+            </h3>
+            <ul class="step-list">
+                <li class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h4>Güvenli Bir Yere Git</h4>
+                        <p>Kalabalık bir ortama, öğretmen odasına veya güvenli hissettiğin herhangi bir yere git. Yalnız kalmamaya çalış.</p>
+                        <span class="tip-badge">
+                            <i class="fas fa-lightbulb"></i>
+                            İpucu: Kütüphane, müdür odası veya kantin güvenli yerlerdir
+                        </span>
+                    </div>
+                </li>
+                <li class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h4>Güvendiğin Bir Yetişkine Söyle</h4>
+                        <p>Bir öğretmenine, okul rehber öğretmenine, müdürüne veya ailene mutlaka anlat. Yalnız başa çıkmaya çalışma.</p>
+                        <span class="tip-badge">
+                            <i class="fas fa-user-shield"></i>
+                            Önemli: Sessiz kalmak zorbalığın devam etmesine sebep olur
+                        </span>
+                    </div>
+                </li>
+                <li class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h4>Olayı Kaydet</h4>
+                        <p>Ne olduğunu, ne zaman olduğunu, kimlerin olduğunu not al. Eğer mesaj, fotoğraf veya video varsa sakla.</p>
+                        <span class="tip-badge">
+                            <i class="fas fa-camera"></i>
+                            Kanıtlar çok önemli: Ekran görüntüsü al, not tut
+                        </span>
+                    </div>
+                </li>
+                <li class="step-item">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h4>Yanıt Verme</h4>
+                        <p>Zorbalık yapan kişiye karşılık verme, kavga etme. Bu durumu daha kötü yapabilir. Sakin kal ve yardım iste.</p>
+                        <span class="tip-badge">
+                            <i class="fas fa-hand"></i>
+                            Akıllı ol: Kavga sorunları çözmez, daha da kötüleştirir
+                        </span>
+                    </div>
+                </li>
+                <li class="step-item">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h4>Resmi Bildirim Yap</h4>
+                        <p>Bu platformu kullanarak anonim bir bildirim yap. Böylece yetkililere ulaşmış olursun ve durum takip edilir.</p>
+                        <span class="tip-badge">
+                            <i class="fas fa-lock"></i>
+                            Gizlilik garantili: Kimliğin gizli kalır
+                        </span>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <!-- SİBER ZORBALIK İÇİN YAPMAN GEREKENLER -->
+        <div class="guide-card">
+            <h3>
+                <i class="fas fa-mobile-screen"></i>
+                Siber Zorbalık İçin Yapman Gerekenler
+            </h3>
+            <ul class="step-list">
+                <li class="step-item">
+                    <div class="step-number">📱</div>
+                    <div class="step-content">
+                        <h4>Ekran Görüntüsü Al</h4>
+                        <p>Mesajların, yorumların veya gönderilerin ekran görüntüsünü hemen al. Bunları delil olarak sakla.</p>
+                    </div>
+                </li>
+                <li class="step-item">
+                    <div class="step-number">🚫</div>
+                    <div class="step-content">
+                        <h4>Engelle ve Bildir</h4>
+                        <p>Zorbalık yapan kişiyi sosyal medya platformunda engelle ve platforma bildir (spam/taciz olarak işaretle).</p>
+                    </div>
+                </li>
+                <li class="step-item">
+                    <div class="step-number">🔒</div>
+                    <div class="step-content">
+                        <h4>Gizlilik Ayarlarını Güçlendir</h4>
+                        <p>Hesaplarını gizli yap, sadece tanıdıklarına açık olsun. Konum paylaşımını kapat.</p>
+                    </div>
+                </li>
+                <li class="step-item">
+                    <div class="step-number">❌</div>
+                    <div class="step-content">
+                        <h4>Yanıt Verme</h4>
+                        <p>Siber zorbalara asla yanıt verme, onlarla tartışma. Bu onların istediği şey. Sessiz kal ve yetkililere bildir.</p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <!-- UNUTMA -->
+        <div class="guide-card">
+            <div class="success-box">
+                <h4>
+                    <i class="fas fa-heart"></i>
+                    Asla Unutma
+                </h4>
+                <p style="margin-bottom: 10px;">
+                    <strong>Sen değerlisin ve zorbalığı hak etmiyorsun.</strong> Zorbalık senin hatan değil, zorba kişinin sorunudur. 
+                    Yardım istemek cesaret gerektirir ve sen cesursun. Yalnız değilsin, seni destekleyen insanlar var.
+                </p>
+                <p style="margin-bottom: 0;">
+                    🌟 <strong>Herkes güvenli ve mutlu bir okul ortamını hak ediyor.</strong>
+                </p>
+            </div>
+        </div>
+
+        <!-- ACIL İLETİŞİM -->
+        <div class="guide-card">
+            <h3>
+                <i class="fas fa-phone"></i>
+                Acil İletişim Hatları
+            </h3>
+            <div class="contact-grid">
+                <a href="tel:112" class="contact-card">
+                    <i class="fas fa-ambulance"></i>
+                    <h4>112</h4>
+                    <p>Acil Yardım (7/24)</p>
+                </a>
+                <a href="tel:183" class="contact-card">
+                    <i class="fas fa-headset"></i>
+                    <h4>ALO 183</h4>
+                    <p>Sosyal Destek Hattı</p>
+                </a>
+                <a href="tel:155" class="contact-card">
+                    <i class="fas fa-car-side"></i>
+                    <h4>155</h4>
+                    <p>Polis (Acil)</p>
+                </a>
+            </div>
+
+            <div class="warning-box" style="margin-top: 20px;">
+                <h4>
+                    <i class="fas fa-info-circle"></i>
+                    Bilgi
+                </h4>
+                <p>
+                    Bu numaralar ücretsizdir ve 7/24 ulaşılabilir. Aramadan çekinme, 
+                    uzmanlar sana yardımcı olmak için orada.
+                </p>
+            </div>
+        </div>
+
+        <!-- BİLDİRİM YAP BUTONU -->
+        <a href="/" class="emergency-btn">
+            <i class="fas fa-bell"></i>
+            Şimdi Bildirim Yap
+        </a>
+
+    </div>
+
+</body>
+</html>

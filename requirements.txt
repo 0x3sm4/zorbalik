@@ -1,0 +1,8 @@
+flask
+flask_sqlalchemy
+vosk
+soundfile
+numpy
+
+
+

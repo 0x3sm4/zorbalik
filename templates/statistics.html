@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İstatistikler - Güvenli Okul</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: linear-gradient(135deg, #E8ECEF 0%, #C4D8E5 40%, #A7C7E7 100%);
+            min-height: 100vh;
+            padding: 24px;
+        }
+
+        .container-fluid { max-width: 1600px; }
+
+        .top-bar {
+            background: rgba(232, 236, 239, 0.85);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 20px 32px;
+            margin-bottom: 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 4px 16px rgba(28, 43, 72, 0.08);
+        }
+
+        .page-title {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .page-title h1 {
+            font-size: 28px;
+            font-weight: 800;
+            color: #333333;margin: 0;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-tab {
+            padding: 12px 24px;
+            background: rgba(232, 236, 239, 0.85);
+            border: 1px solid rgba(142, 177, 209, 0.2);
+            border-radius: 12px;
+            text-decoration: none;
+            color: #333333;font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-tab.active {
+            background: linear-gradient(135deg, #8EB1D1, #A7C7E7);
+            color: white;
+            box-shadow: 0 4px 12px rgba(142, 177, 209, 0.3);
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333333;margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i { color: #333333;}
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 18px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: rgba(232, 236, 239, 0.85);
+            backdrop-filter: blur(10px);
+            border-radius: 18px;
+            padding: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 4px 16px rgba(28, 43, 72, 0.08);
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(28, 43, 72, 0.08);
+        }
+
+        .stat-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            margin-bottom: 16px;
+        }
+
+        .icon-total { background: linear-gradient(135deg, #3B82F6, #2563EB); color: white; }
+        .icon-high { background: linear-gradient(135deg, #EF4444, #DC2626); color: white; }
+        .icon-medium { background: linear-gradient(135deg, #F59E0B, #D97706); color: white; }
+        .icon-low { background: linear-gradient(135deg, #10B981, #059669); color: white; }
+
+        .stat-label {
+            font-size: 13px;
+            color: #333333;font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: 800;
+            color: #333333;}
+
+        .location-card {
+            background: rgba(232, 236, 239, 0.85);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-left: 4px solid #8EB1D1;
+            box-shadow: 0 4px 16px rgba(28, 43, 72, 0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .location-card:hover {
+            transform: translateX(4px);
+            box-shadow: 0 6px 20px rgba(28, 43, 72, 0.08);
+        }
+
+        .location-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .location-rank {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #8EB1D1, #A7C7E7);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 800;
+            font-size: 16px;
+        }
+
+        .location-name {
+            font-weight: 700;
+            font-size: 16px;
+            color: #333333;}
+
+        .location-count {
+            background: linear-gradient(135deg, #8EB1D1, #A7C7E7);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 18px;
+            box-shadow: 0 4px 12px rgba(142, 177, 209, 0.3);
+        }
+
+        .geography-section {
+            background: rgba(232, 236, 239, 0.85);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 28px 32px;
+            margin-top: 32px;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 4px 16px rgba(28, 43, 72, 0.08);
+        }
+
+        .subsection-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #333333;margin: 24px 0 16px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 48px 24px;
+            color: #333333;}
+
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+
+        .btn-back-top {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: rgba(142, 177, 209, 0.1);
+            border-radius: 12px;
+            color: #333333;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .btn-back-top:hover {
+            background: rgba(142, 177, 209, 0.2);
+            color: #333333;
+            transform: translateX(-4px);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="top-bar">
+        <div class="page-title">
+            <h1><i class="fas fa-chart-bar"></i> İstatistikler</h1>
+        </div>
+        <div class="nav-tabs">
+            <a href="/admin" class="nav-tab">
+                <i class="fas fa-list"></i> Bildirimler
+            </a>
+            <a href="/admin/statistics" class="nav-tab active">
+                <i class="fas fa-chart-bar"></i> İstatistikler
+            </a>
+            <a href="/" class="nav-tab">
+                <i class="fas fa-home"></i> Ana Sayfa
+            </a>
+        </div>
+        <a href="javascript:history.back()" class="btn-back-top">
+            <i class="fas fa-arrow-left"></i> Geri
+        </a>
+    </div>
+
+    <h5 class="section-title"><i class="fas fa-calendar-day"></i> Günlük İstatistikler</h5>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon icon-total"><i class="fas fa-bell"></i></div>
+            <div class="stat-label">Toplam Bildirim</div>
+            <div class="stat-value">{{ daily_stats.total }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon icon-high"><i class="fas fa-exclamation-triangle"></i></div>
+            <div class="stat-label">Yüksek Risk</div>
+            <div class="stat-value">{{ daily_stats.high }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon icon-medium"><i class="fas fa-exclamation-circle"></i></div>
+            <div class="stat-label">Orta Risk</div>
+            <div class="stat-value">{{ daily_stats.medium }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon icon-low"><i class="fas fa-check-circle"></i></div>
+            <div class="stat-label">Düşük Risk</div>
+            <div class="stat-value">{{ daily_stats.low }}</div>
+        </div>
+    </div>
+
+    <h5 class="section-title"><i class="fas fa-calendar-week"></i> Haftalık İstatistikler</h5>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon icon-total"><i class="fas fa-bell"></i></div>
+            <div class="stat-label">Toplam Bildirim</div>
+            <div class="stat-value">{{ weekly_stats.total }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon icon-high"><i class="fas fa-exclamation-triangle"></i></div>
+            <div class="stat-label">Yüksek Risk</div>
+            <div class="stat-value">{{ weekly_stats.high }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon icon-medium"><i class="fas fa-exclamation-circle"></i></div>
+            <div class="stat-label">Orta Risk</div>
+            <div class="stat-value">{{ weekly_stats.medium }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon icon-low"><i class="fas fa-check-circle"></i></div>
+            <div class="stat-label">Düşük Risk</div>
+            <div class="stat-value">{{ weekly_stats.low }}</div>
+        </div>
+    </div>
+
+    <h5 class="section-title"><i class="fas fa-calendar-alt"></i> Yıllık İstatistikler</h5>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon icon-total"><i class="fas fa-bell"></i></div>
+            <div class="stat-label">Toplam Bildirim</div>
+            <div class="stat-value">{{ yearly_stats.total }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon icon-high"><i class="fas fa-exclamation-triangle"></i></div>
+            <div class="stat-label">Yüksek Risk</div>
+            <div class="stat-value">{{ yearly_stats.high }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon icon-medium"><i class="fas fa-exclamation-circle"></i></div>
+            <div class="stat-label">Orta Risk</div>
+            <div class="stat-value">{{ yearly_stats.medium }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon icon-low"><i class="fas fa-check-circle"></i></div>
+            <div class="stat-label">Düşük Risk</div>
+            <div class="stat-value">{{ yearly_stats.low }}</div>
+        </div>
+    </div>
+
+    <!-- COĞRAFİ İSTATİSTİKLER -->
+    <div class="geography-section">
+        <h5 class="section-title">
+            <i class="fas fa-map-marked-alt"></i> 
+            Coğrafi Bildirim Dağılımı
+        </h5>
+
+        <!-- Bu Ayın Bölgeleri -->
+        <h6 class="subsection-title">
+            <i class="fas fa-calendar-alt"></i> Bu Ay En Çok Bildirim Yapılan Bölgeler
+        </h6>
+        
+        {% if current_month_locations %}
+        <div class="row">
+            {% for location, count in current_month_locations %}
+            <div class="col-md-6">
+                <div class="location-card">
+                    <div class="location-info">
+                        <div class="location-rank">#{{ loop.index }}</div>
+                        <div class="location-name">
+                            <i class="fas fa-map-pin" style="color: #333333;"></i> {{ location }}
+                        </div>
+                    </div>
+                    <div class="location-count">{{ count }}</div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-info-circle"></i>
+            <p>Bu ay henüz konum bilgisi içeren bildirim yok.</p>
+        </div>
+        {% endif %}
+
+        <!-- Tüm Zamanların İstatistikleri -->
+        <h6 class="subsection-title mt-4">
+            <i class="fas fa-chart-bar"></i> Tüm Zamanların En Çok Bildirim Yapılan Bölgeleri
+        </h6>
+        
+        {% if top_locations %}
+        <div class="row">
+            {% for location, count in top_locations %}
+            <div class="col-md-6">
+                <div class="location-card">
+                    <div class="location-info">
+                        <div class="location-rank">#{{ loop.index }}</div>
+                        <div class="location-name">
+                            <i class="fas fa-map-pin" style="color: #333333;"></i> {{ location }}
+                        </div>
+                    </div>
+                    <div class="location-count">{{ count }}</div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-map-marked-alt"></i>
+            <p>Henüz konum bilgisi içeren bildirim yok.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

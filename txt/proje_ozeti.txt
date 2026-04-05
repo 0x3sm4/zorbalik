@@ -1,0 +1,97 @@
+PROJE OZETI - Zorbalik Bildirim ve Destek Platformu (Guncel)
+
+1) PROJENIN AMACI
+Bu uygulama, zorbalikla ilgili olaylarin guvenli sekilde bildirilmesi, kayitlarin yonetilmesi ve kullanicinin sureci takip edebilmesi icin gelistirilmis Flask tabanli bir sistemdir.
+Proje uc ana ihtiyaci birlestirir:
+- Bildirim toplama (metin/ses + konum)
+- Yonetim ve analiz (admin paneli + istatistik)
+- Psikososyal destek (OpenAI tabanli chatbot)
+
+2) KULLANILAN TEKNOLOJI VE BAGIMLILIKLAR
+- Python, Flask
+- Flask-SQLAlchemy (SQLite)
+- OpenAI Python SDK (chatbot entegrasyonu)
+- Frontend: Jinja2 templates, HTML/CSS/JS (static dosyalar)
+- requirements.txt: flask, flask_sqlalchemy, vosk, soundfile, numpy
+
+3) MIMARI OZET
+- app.py:
+  - Uygulama konfigrasyonu, route tanimlari, chatbot API entegrasyonu
+  - Bildirim kayit, takip, admin ve istatistik akislarini yonetir
+- models.py:
+  - Notification modeli ve veritabani semasi
+- utils.py:
+  - analyze_text() ile kelime tabanli risk analizi (low/medium/high)
+- templates/:
+  - Kullanici, cocuk modu, takip, acil yardim, admin ve istatistik arayuzleri
+- static/:
+  - Ozellikle sehir/ilce secimi gibi istemci tarafi yardimci dosyalar
+- uploads/:
+  - Yuklenen ses dosyalarinin fiziksel saklandigi klasor
+
+4) TEMEL IS AKISLARI
+4.1) Standart Bildirim Akisi
+1. Kullanici ana formdan metin/ses ve opsiyonel iletisim bilgilerini girer.
+2. Metin varsa analyze_text() ile risk seviyesi hesaplanir.
+3. Kayit Notification tablosuna yazilir.
+4. Sistem benzersiz tracking_token uretir.
+5. Kullanici result sayfasinda takip kodunu alir.
+
+4.2) Cocuk Modu Akisi
+1. Cocuk, emoji temelli duygu secimi yapar.
+2. Secim metinsel aciklamaya cevrilir.
+3. Varsa base64 ses verisi dosya olarak uploads altina kaydedilir.
+4. Duygu secimine gore risk seviyesi orta/yuksek atanir.
+
+4.3) Takip Akisi
+1. Kullanici takip kodunu girer.
+2. Sistem ilgili bildirimi bulur.
+3. Durum, oncelik ve admin notlari goruntulenebilir.
+
+4.4) Admin Akisi
+1. Tum bildirimler tarih sirasina gore listelenir.
+2. Admin, durum/oncelik/atama/not alanlarini gunceller.
+3. Konum bazli yogunluk ve zaman bazli dagilimlar panelde izlenir.
+
+5) CHATBOT MODULU (OZET)
+- /chatbot-page: chatbot arayuzu
+- /chatbot (POST): mesaji alir, session bazli gecmise ekler, OpenAI cevabi doner
+- /chatbot/reset (POST): ilgili session gecmisini sifirlar
+
+Chatbot tarafinda:
+- Guvenlik odakli detayli system prompt kullanilir
+- API hatalari (AuthenticationError, RateLimitError, APIError) ayri ele alinir
+- Session gecmisi bellek icinde tutulur, cok uzarsa kisaltilir
+
+6) VERI MODELI (Notification)
+Ana alanlar:
+- Metin/ses: text, audio_path
+- Kimlik/iletisim: anonymity_level, contact_name, contact_email, contact_phone
+- Konum: city, district
+- Degerlendirme: risk_level
+- Surec: tracking_token, status, priority, assigned_to, admin_notes
+- Zaman damgalari: created_at, updated_at
+
+7) RAPORLAMA VE ISTATISTIK
+Admin panelinde asagidaki metrikler uretilir:
+- Toplam bildirim sayisi
+- Risk seviyesine gore dagilim (high/medium/low)
+- Bekleyen bildirim sayisi (Inceleniyor)
+- Gunluk, haftalik, yillik ozetler
+- Konum bazli en yogun 10 bolge
+- Aylik konum dagilimi (statistics sayfasi)
+
+8) GUVENLIK VE ISLETIM NOTLARI
+- OPENAI_API_KEY bos ise chatbot endpoint'i hata doner.
+- Dosya yukleme limiti 16 MB ile sinirlanmistir.
+- Veritabani sqlite:///notifications.db olarak ayarlidir.
+- Uygulama su an debug modunda calistirilmaktadir (gelistirme ortami).
+
+9) GELISTIRME ICIN ONERILEN SONRAKI ADIMLAR
+- API anahtari ve hassas ayarlar icin .env tabanli konfigurasyon
+- Session ve chat gecmisi icin kalici depolama (Redis/DB)
+- Risk analizi icin kural + ML hibrid yaklasim
+- Rol tabanli admin yetkilendirme ve audit log
+
+10) KISA SONUC
+Bu proje, zorbalik bildirimlerinin alinmasi, siniflandirilmasi, yonetilmesi ve kullaniciya destek saglanmasini tek platformda toplayan, gercek kullanim senaryolarina uygun bir temel sunmaktadir.

@@ -3,6 +3,7 @@ from flask import Flask, render_template, request, redirect, url_for, send_from_
 from werkzeug.utils import secure_filename
 import os
 import sys
+import uuid
 from datetime import datetime, timedelta
 from collections import Counter
 
@@ -49,7 +50,7 @@ with app.app_context():
 
 # -------------------- CHATBOT CONFIG --------------------
 # Gemini yapılandırması
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "AIzaSyCZqT0ThBW3ZPIZYyincXxoJF9StckGpPU")
 GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.0-flash")
 
 if genai is None:
@@ -433,6 +434,13 @@ def index():
             save_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             audio.save(save_path)
             audio_path = filename
+
+        voice_record = request.files.get('voice_record')
+        if voice_record and voice_record.filename:
+            ext = os.path.splitext(secure_filename(voice_record.filename))[1] or '.webm'
+            vr_filename = str(uuid.uuid4()) + ext
+            vr_save_path = os.path.join(app.config['UPLOAD_FOLDER'], vr_filename)
+            voice_record.save(vr_save_path)
 
         notification = Notification(
             text=text,

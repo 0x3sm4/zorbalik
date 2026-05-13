@@ -50,7 +50,7 @@ with app.app_context():
 
 # -------------------- CHATBOT CONFIG --------------------
 # Gemini yapılandırması
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "AIzaSyCZqT0ThBW3ZPIZYyincXxoJF9StckGpPU")
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
 GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.0-flash")
 
 if genai is None:
